@@ -1,3 +1,7 @@
+import sqlite3
+import json
+from models import Animal
+
 ANIMALS = [
     {"id": 1, "name": "Snickers", "species": "Dog", "locationId": 1, "customerId": 4, "status": "Admitted"},
     {"id": 2, "name": "Roman", "species": "Dog", "locationId": 1, "customerId": 2, "status": "Admitted"},
@@ -6,7 +10,45 @@ ANIMALS = [
 
 
 def get_all_animals():
-    return ANIMALS
+    """ Open a connection to the database"""
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+
+        """ Just use these. It's a Black Box."""
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.breed,
+            a.status,
+            a.location_id,
+            a.customer_id
+        FROM animal a
+        """)
+
+        # Initialize an empty list to hold all animal representations
+        animals = []
+
+        # Convert rows of data into a Python list
+        dataset = db_cursor.fetchall()
+
+        # Iterate list of data returned from database
+        for row in dataset:
+
+            # Create an animal instance from the current row.
+            # Note that the database fields are specified in
+            # exact order of the parameters defined in the
+            # Animal class above.
+            animal = Animal(row['id'], row['name'], row['breed'],
+                            row['status'], row['location_id'],
+                            row['customer_id'])
+
+            animals.append(animal.__dict__) # see the notes below for an explanation on this line of code.
+
+    return animals
 
 
 # Function with a single parameter
@@ -63,4 +105,4 @@ def update_animal(id, new_animal):
         if animal["id"] == id:
             # Found the animal. Update the value.
             ANIMALS[index] = new_animal
-            break        
+            break           
