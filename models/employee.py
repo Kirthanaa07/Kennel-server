@@ -1,8 +1,9 @@
-class Employee:
+class Employee():
   
-  def __init__(self,id, name,status):
+  def __init__(self,id, name,address,location_id):
     self.id = id,
     self.name = name,
-    self.status = status
+    self.address = address,
+    self.location_id = location_id
     
-new_employee = Employee(1,"John","active")    
+new_employee = Employee(1,"John","Charlotte Pike",1)    
